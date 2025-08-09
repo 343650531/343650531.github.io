@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>五子棋游戏</title>
+    <style>
+        #board {
+            width: 300px;
+            height: 300px;
+            border: 1px solid black;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .cell {
+            width: 20px;
+            height: 20px;
+            border: 1px solid black;
+            box-sizing: border-box;
+        }
+        .black {
+            background-color: black;
+            border-radius: 50%;
+        }
+        .white {
+            background-color: white;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div id="board"></div>
+
+    <script>
+        const board = document.getElementById('board');
+        const cells = [];
+        let currentPlayer = 'black';
+
+        for (let i = 0; i < 15; i++) {
+            for (let j = 0; j < 15; j++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.row = i;
+                cell.dataset.col = j;
+                cell.addEventListener('click', placePiece);
+                board.appendChild(cell);
+                cells.push(cell);
+            }
+        }
+
+        function placePiece(event) {
+            const cell = event.target;
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+
+            if (cell.classList.contains('black') || cell.classList.contains('white')) {
+                return;
+            }
+
+            cell.classList.add(currentPlayer);
+
+            if (checkWin(row, col, currentPlayer)) {
+                alert(currentPlayer === 'black' ? '黑棋胜利！' : '白棋胜利！');
+                resetGame();
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+        }
+
+        function checkWin(row, col, color) {
+            // 检查横向
+            let count = 1;
+            for (let i = col - 1; i >= 0; i--) {
+                if (cells[row * 15 + i].classList.contains(color)) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            for (let i = col + 1; i < 15; i++) {
+                if (cells[row * 15 + i].classList.contains(color)) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            if (count >= 5) {
+                return true;
+            }
+
+            // 检查纵向
+            count = 1;
+            for (let i = row - 1; i >= 0; i--) {
+                if (cells[i * 15 + col].classList.contains(color)) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            for (let i = row + 1; i < 15; i++) {
+                if (cells[i * 15 + col].classList.contains(color)) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            if (count >= 5) {
+                return true;
+            }
+
+            // 检查左上到右下
+            count = 1;
+            for (let i = 1; i < 15; i++) {
+                if (row - i >= 0 && col - i >= 0 && cells[(row - i) * 15 + (col - i)].classList.contains(color)) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            for (let i = 1; i < 15; i++) {
+                if (row + i < 15 && col + i < 15 && cells[(row + i) * 15 + (col + i)].classList.contains(color)) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            if (count >= 5) {
+                return true;
+            }
+
+            // 检查右上到左下
+            count = 1;
+            for (let i = 1; i < 15; i++) {
+                if (row - i >= 0 && col + i < 15 && cells[(row - i) * 15 + (col + i)].classList.contains(color)) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            for (let i = 1; i < 15; i++) {
+                if (row + i < 15 && col - i >= 0 && cells[(row + i) * 15 + (col - i)].classList.contains(color)) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            if (count >= 5) {
+                return true;
+            }
+
+            return false;
+        }
+
+        function resetGame() {
+            cells.forEach(cell => {
+                cell.classList.remove('black', 'white');
+            });
+            currentPlayer = 'black';
+        }
+    </script>
+</body>
+</html>
